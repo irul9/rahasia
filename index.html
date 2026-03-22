@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Verifikasi RAHASIA</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            /* Default background untuk slide 1 dst */
+            background-color: #ffe6f2; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            flex-direction: column;
+            text-align: center;
+            color: #ff4d94;
+            position: relative; 
+            transition: background-color 0.5s ease; /* Transisi warna background */
+        }
+
+        /* Styling Khusus Slide Awal (MODE HITAM) */
+        body.dark-mode {
+            background-color: #000000;
+            color: #ffffff;
+        }
+        
+        /* Container Ornamen Background (Hanya muncul di mode pink) */
+        #ornaments-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* Biar gak bisa diklik */
+            z-index: 1;
+            display: none; /* Sembunyi di awal */
+        }
+
+        .ornament {
+            position: absolute;
+            color: rgba(255, 77, 148, 0.2); /* Pink sangat transparan */
+            animation: floatBackground infinite ease-in-out;
+            user-select: none;
+        }
+
+        @keyframes floatBackground {
+            0% { transform: translateY(0px) rotate(0deg); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+        }
+
+        /* Styling Konten Utama */
+        .screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 20; /* Di atas ornamen */
+            max-width: 600px;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        /* Munculkan screen awal */
+        #screen0 {
+            display: flex;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 3px rgba(255, 77, 148, 0.2);
+        }
+        
+        /* H1 khusus mode gelap gak pake shadow pink */
+        body.dark-mode h1 {
+            text-shadow: none;
+            font-family: 'Courier New', Courier, monospace; /* Gaya font kode */
+        }
+
+        p {
+            font-size: 1.5em;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            color: #ff3385;
+        }
+        
+        body.dark-mode p {
+            color: #cccccc;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        .list-container {
+            text-align: left;
+            font-size: 1.3em;
+            color: #ff3385;
+            margin-bottom: 30px;
+            background: rgba(255, 255, 255, 0.6);
+            padding: 20px 40px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(255, 77, 148, 0.1);
+            backdrop-filter: blur(5px); /* Efek kaca buram */
+        }
+
+        ol {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            position: relative;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 1.2em;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background-color: #ff4d94;
+            color: white;
+            box-shadow: 0 4px 15px rgba(255, 77, 148, 0.4);
+            font-weight: bold;
+            z-index: 30;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+            background-color: #ff1a75;
+        }
+        
+        /* Tombol khusus slide awal mode gelap */
+        #btnOpen {
+            background-color: transparent;
+            border: 2px solid #ffffff;
+            color: #ffffff;
+            border-radius: 5px; /* Kotak industrial */
+            box-shadow: none;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        
+        #btnOpen:hover {
+            background-color: #ffffff;
+            color: #000000;
+        }
+
+        #btnYes1 { background-color: #ff66a3; }
+        #btnYes2 { background-color: #cc0052; }
+
+        #btnNo {
+            background-color: #b3b3b3; 
+            box-shadow: 0 4px 15px rgba(179, 179, 179, 0.4);
+            /* Transisi gerak otomatis (pacing disesuaikan) */
+            transition: left 0.7s ease-in-out, top 0.7s ease-in-out, background-color 0.2s; 
+            z-index: 50; 
+        }
+
+        /* Elemen ledakan akhir */
+        .confetti {
+            position: absolute;
+            font-size: 2.5em;
+            animation: popAndFall linear forwards;
+            z-index: 10;
+            user-select: none;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes popAndFall {
+            0% { transform: scale(0) translateY(0) rotate(0deg); opacity: 1; }
+            20% { transform: scale(1.2) translateY(-50px) rotate(45deg); }
+            100% { transform: scale(1) translateY(110vh) rotate(360deg); opacity: 0; }
+        }
+    </style>
+</head>
+<body class="dark-mode">
+
+    <div id="ornaments-container"></div>
+
+    <div id="screen0" class="screen">
+        <h1>[ SYSTEM ERROR ]<br>PROJECT_CONFESS.EXE</h1>
+        <p>Akses terbatas. Membutuhkan verifikasi biometrik.</p>
+        <button id="btnOpen" onclick="nextScreen(0, 1)">> JALANKAN PROGRAM</button>
+    </div>
+
+    <div id="screen1" class="screen">
+        <h1>Warning.</h1>
+        <p>Ini adalah program rahasia.<br>Hanya boleh dibuka oleh Nadia.<br><br>Klik kalau kamu Nadia.</p>
+        <button onclick="nextScreen(1, 2)">Aku Nadia</button>
+    </div>
+
+    <div id="screen2" class="screen">
+        <h1>Verifikasi dulu.</h1>
+        <p>Apakah kamu:</p>
+        <div class="list-container">
+            <ol>
+                <li>Imuttt</li>
+                <li>Menggemaskannn</li>
+                <li>Cantikkk</li>
+                <li>Suka Ketiduran</li>
+                <li>Suka Makan Baksooo sama Seblakkk</li>
+                <li>Suka Kepanasan di kantor</li>
+				<li>Suka Makeup Tengah Malem</li>
+				<li>Suka Makan pedes, tapi perut tidak bersahabat</li>
+				<li>Extrovert, Tapi Jarang Keluar</li>
+                <li>Bersahabat dengan Baby Boomers</li>
+            </ol>
+        </div>
+        <button onclick="nextScreen(2, 3)">Iya semua</button>
+    </div>
+
+    <div id="screen3" class="screen">
+        <h1>Oke berarti benar Nadia.</h1>
+        <p>Sekarang ada satu bug di program ini.<br><br>Bug-nya adalah:<br>......</p>
+        <button onclick="nextScreen(3, 4)">Next</button>
+    </div>
+
+    <div id="screen4" class="screen">
+        <h1>Setelah dianalisis...</h1>
+        <p>Ternyata penyebab bug-nya adalah<br>aku suka sama kamu.</p>
+        <button onclick="nextScreen(4, 5)">Next</button>
+    </div>
+
+    <div id="screen5" class="screen">
+        <h1 id="finalTitle">Solusi bug:</h1>
+        <p id="finalText">Apakah Nadia bersedia<br>kalau kita berpacaran?</p>
+        <div class="buttons" id="finalButtons">
+            <button id="btnYes1" onclick="jadian()">Iya</button>
+            <button id="btnYes2" onclick="jadian()">Iya juga tapi beda warna doang</button>
+            <button id="btnNo" onmouseover="kaburMendadak()" ontouchstart="kaburMendadak()">Tidak</button>
+        </div>
+    </div>
+
+    <script>
+        let intervalTerbang; 
+
+        function nextScreen(current, next) {
+            document.getElementById('screen' + current).style.display = 'none';
+            document.getElementById('screen' + next).style.display = 'flex';
+
+            // Transisi dari Hitam ke Pink pas pencet "Buka"
+            if (current === 0 && next === 1) {
+                document.body.classList.remove('dark-mode');
+                mulaiOrnamen();
+            }
+
+            if (next === 5) {
+                mulaiTerbang();
+            }
+        }
+        
+        // Fungsi generate ornamen melayang di background
+        function mulaiOrnamen() {
+            const container = document.getElementById('ornaments-container');
+            container.style.display = 'block';
+            const shapes = ['💖', '✨', '🌸', '🤍'];
+            
+            for (let i = 0; i < 15; i++) {
+                setTimeout(() => {
+                    const el = document.createElement('div');
+                    el.classList.add('ornament');
+                    el.innerText = shapes[Math.floor(Math.random() * shapes.length)];
+                    
+                    // Posisi random
+                    el.style.left = Math.random() * 100 + 'vw';
+                    el.style.top = Math.random() * 100 + 'vh';
+                    
+                    // Ukuran random
+                    el.style.fontSize = (Math.random() * 1 + 1) + 'em';
+                    
+                    // Durasi dan delay animasi random
+                    el.style.animationDuration = (Math.random() * 5 + 4) + 's';
+                    el.style.animationDelay = (Math.random() * 5) + 's';
+                    
+                    container.appendChild(el);
+                    
+                    // Bersihin dan bikin baru terus menerus biar gak sepi
+                    setInterval(() => {
+                        el.style.left = Math.random() * 100 + 'vw';
+                        el.style.top = Math.random() * 100 + 'vh';
+                    }, 9000);
+                    
+                }, i * 300);
+            }
+        }
+
+        function mulaiTerbang() {
+            const btn = document.getElementById('btnNo');
+            btn.style.position = 'absolute'; 
+            
+            pindahkanTombol(btn);
+            
+            // Interval gerak otomatis (Pacing cepet sesuai permintaan terakhir)
+            intervalTerbang = setInterval(() => {
+                pindahkanTombol(btn);
+            }, 700);
+        }
+
+        function kaburMendadak() {
+            const btn = document.getElementById('btnNo');
+            // Mode turbo pas dideketin kursor
+            btn.style.transition = 'left 0.2s ease-out, top 0.2s ease-out';
+            pindahkanTombol(btn);
+            // Balik normal
+            setTimeout(() => {
+                btn.style.transition = 'left 0.7s ease-in-out, top 0.7s ease-in-out';
+            }, 200);
+        }
+
+        function pindahkanTombol(btn) {
+            const maxX = window.innerWidth - btn.offsetWidth - 20;
+            const maxY = window.innerHeight - btn.offsetHeight - 20;
+            
+            const randomX = Math.max(10, Math.floor(Math.random() * maxX));
+            const randomY = Math.max(10, Math.floor(Math.random() * maxY));
+            
+            btn.style.left = randomX + 'px';
+            btn.style.top = randomY + 'px';
+        }
+
+        function jadian() {
+            clearInterval(intervalTerbang);
+            const btnNo = document.getElementById('btnNo');
+            if (btnNo) btnNo.style.display = 'none';
+
+            document.getElementById('finalButtons').style.display = 'none';
+            
+            document.getElementById('finalTitle').innerText = "Yeyyy! 🎉";
+            document.getElementById('finalText').innerHTML = "Oke Jadi sekarang kita official ya, sekarang kita tentukan nama panggilan kita, biar gak ganti-ganti terus tiap hari.<br><br>Kadang Mbak, kadang your grace, kadang tuan putri, kadang neng, kadang nok, kadang kak, kadang baginda ratu, kadang kartini, kadang princess, kadang princess aurora, kadang kidding.";
+            
+            createExplosion();
+        }
+
+        function createExplosion() {
+            const emojis = ['🌸', '🌺', '🌷', '🌹', '💐', '✨', '💖', '💘', '💝', '🎊'];
+            for (let i = 0; i < 100; i++) {
+                setTimeout(() => {
+                    const el = document.createElement('div');
+                    el.classList.add('confetti');
+                    el.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+                    el.style.left = (Math.random() * 100) + 'vw';
+                    el.style.top = (Math.random() * 50 - 20) + 'vh'; 
+                    el.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                    document.body.appendChild(el);
+                    setTimeout(() => { el.remove(); }, 5000);
+                }, i * 30); 
+            }
+        }
+    </script>
+
+</body>
+</html>
